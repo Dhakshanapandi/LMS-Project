@@ -7,6 +7,7 @@ const redisClient = () => {
         return process.env.REDIS;
     }
     throw new Error("Redis connection failed");
+
 }
 
 // Create a new instance of Redis client
