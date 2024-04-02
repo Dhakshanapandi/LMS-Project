@@ -5,6 +5,8 @@ import {ErrorMiddleware} from "./middleware/error"
 require("dotenv").config();
 import userRouter from "./routes/userRoute"
 import courseRouter from "./routes/courseRoute";
+import orderRouter from "./routes/orderRoute";
+import notificationRouter from "./routes/notificationRoute"
 export const app = express();
 
 //body parser
@@ -16,6 +18,8 @@ app.use(cors({origin:process.env.ORIGIN}))
 
 app.use("/user",userRouter);
 app.use("/course",courseRouter);
+app.use("/order",orderRouter);
+app.use("/notification",notificationRouter)
 
 app.all("*",(req:Request,res:Response,next:NextFunction)=>{
     const err = new Error(`Route ${req.originalUrl} not found`) as any;
