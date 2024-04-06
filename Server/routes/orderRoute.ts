@@ -1,9 +1,14 @@
 import express from "express";
-import createOrder from "../controllers/orderController";
+import createOrderHandle from "../controllers/orderController";
 import { isAuthenticated } from "../middleware/auth";
+import { CatchAsyncError } from "../middleware/CatchAsyncErrors";
 
 const orderRoute = express.Router();
 
-orderRoute.post("/createOrder",isAuthenticated,createOrder);
+orderRoute.post(
+  "/createOrder",
+  isAuthenticated,
+  CatchAsyncError(createOrderHandle)
+);
 
 export default orderRoute;

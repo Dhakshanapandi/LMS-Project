@@ -48,7 +48,4 @@ cron.schedule("0 0 0 * * *",async()=>{
      console.log("Deleted read notification");
      
 })
-const getAllNotification = CatchAsyncError(handleGetAllNotification);
-const updateNotification = CatchAsyncError(handleUpdateNotification);
-
-export  {getAllNotification,updateNotification};
+export {handleGetAllNotification,handleUpdateNotification};

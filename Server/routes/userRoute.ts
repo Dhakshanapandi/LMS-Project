@@ -1,26 +1,27 @@
 import express from "express";
-import { Activation, UpdatePassword, UpdateProfilePicture, getUserInfo, loginUser, logoutUser, socialAuth, updateAccessToken, updateUserInfo, userRegistration } from "../controllers/userController";
+import { ActivateUser, UpdatePassword, UpdateProfilePicture, getUserInfo, loginUser, logoutUser, socialAuth, updateAccessToken, updateUserInfo, userRegistrationHandler } from "../controllers/userController";
 import { authorizeRoles, isAuthenticated } from "../middleware/auth";
+import { CatchAsyncError } from "../middleware/CatchAsyncErrors";
 const router = express.Router();
 
-router.post("/registration", userRegistration);
+router.post("/registration",CatchAsyncError(userRegistrationHandler));
 
-router.post("/activateCode", Activation);
+router.post("/activateCode", CatchAsyncError(ActivateUser));
 
-router.post("/loginUser", loginUser);
+router.post("/loginUser", CatchAsyncError(loginUser));
 
-router.get("/logoutUser", isAuthenticated, logoutUser);
+router.get("/logoutUser", isAuthenticated, CatchAsyncError(logoutUser));
 
-router.get("/refresh", updateAccessToken);
+router.get("/refresh", CatchAsyncError(updateAccessToken));
 
-router.get("/getUser", isAuthenticated, getUserInfo);
+router.get("/getUser", isAuthenticated, CatchAsyncError(getUserInfo));
 
-router.post("/socialAuth", socialAuth);
+router.post("/socialAuth", CatchAsyncError(socialAuth));
 
-router.put("/updateUserInfo", isAuthenticated, updateUserInfo);
+router.put("/updateUserInfo", isAuthenticated, CatchAsyncError(updateUserInfo));
 
-router.put("/updatePassword", isAuthenticated, UpdatePassword);
+router.put("/updatePassword", isAuthenticated, CatchAsyncError(UpdatePassword));
 
-router.put("/updateUserAvatar", isAuthenticated, UpdateProfilePicture);
+router.put("/updateUserAvatar", isAuthenticated, CatchAsyncError(UpdateProfilePicture));
 
 export default router;
