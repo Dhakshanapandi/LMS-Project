@@ -1,9 +1,23 @@
-import  Express from "express";
+import Express from "express";
 import { authorizeRoles, isAuthenticated } from "../middleware/auth";
-import {getAllNotification,updateNotification} from "../controllers/notificationController";
+import {
+  handleGetAllNotification,
+  handleUpdateNotification,
+} from "../controllers/notificationController";
+import { CatchAsyncError } from "../middleware/CatchAsyncErrors";
 const Router = Express.Router();
 
-Router.get("/allNotification",isAuthenticated,authorizeRoles("admin"),getAllNotification);
-Router.put("/updateNotification",isAuthenticated,authorizeRoles("admin"),updateNotification);
+Router.get(
+  "/allNotification",
+  isAuthenticated,
+  authorizeRoles("admin"),
+  CatchAsyncError(handleGetAllNotification)
+);
+Router.put(
+  "/updateNotification",
+  isAuthenticated,
+  authorizeRoles("admin"),
+  CatchAsyncError(handleUpdateNotification)
+);
 
 export default Router;
