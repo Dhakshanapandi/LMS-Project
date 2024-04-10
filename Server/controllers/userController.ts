@@ -14,7 +14,7 @@ import {
   sendToken,
 } from "../utils/jwt";
 import { redis } from "../utils/redis";
-import getUserById, { getAllUserServices } from "../services/user_services";
+import getUserById, { getAllUserServices, updateUserRoleService } from "../services/user_services";
 import cloudinary from "cloudinary";
 
 //create new user
@@ -395,10 +395,20 @@ async function UpdateProfilePicture(
 }
 
 // Get All User --- only for admins
-export const getAllUsers = async (req: Request, res: Response, next: NextFunction) => {
+const getAllUsers = async (req: Request, res: Response, next: NextFunction) => {
   try {
     getAllUserServices(res);
   } catch (error: any) {
+    return next(new ErrorHandler(error.message, 400))
+  }
+}
+
+// Update User Role  -- only for admins
+const updateUserRole = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const {id, role} = req.body;
+    updateUserRoleService(res,id,role);
+  } catch (error:any) {
     return next(new ErrorHandler(error.message, 400))
   }
 }
@@ -414,4 +424,6 @@ export {
   updateUserInfo,
   UpdatePassword,
   UpdateProfilePicture,
+  getAllUsers,
+  updateUserRole
 };
