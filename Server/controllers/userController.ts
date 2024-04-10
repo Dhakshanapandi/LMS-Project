@@ -14,7 +14,7 @@ import {
   sendToken,
 } from "../utils/jwt";
 import { redis } from "../utils/redis";
-import getUserById from "../services/user_services";
+import getUserById, { getAllUserServices } from "../services/user_services";
 import cloudinary from "cloudinary";
 
 //create new user
@@ -391,6 +391,15 @@ async function UpdateProfilePicture(
     });
   } catch (error: any) {
     return next(new ErrorHandler(error.message, 400));
+  }
+}
+
+// Get All User --- only for admins
+export const getAllUsers = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    getAllUserServices(res);
+  } catch (error: any) {
+    return next(new ErrorHandler(error.message, 400))
   }
 }
 

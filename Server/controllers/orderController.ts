@@ -1,12 +1,12 @@
-import express, { NextFunction, Request, Response } from "express";
-import ErrorHandler from "../utils/ErrorHandler";
-import userModel, { IUser } from "../models/userModel";
-import CourseModel, { ICourse } from "../models/courseModel";
-import { CatchAsyncError } from "../middleware/CatchAsyncErrors";
-import { IOrder } from "../models/orderModel";
-import sendMail from "../utils/sendMail";
-import NotificationModel from "../models/notificationModel";
-import { createNewOrder } from "../services/orderServices";
+import express, { NextFunction, Request, Response } from "express"
+import ErrorHandler from "../utils/ErrorHandler"
+import userModel, { IUser } from "../models/userModel"
+import CourseModel, { ICourse } from "../models/courseModel"
+import { CatchAsyncError } from "../middleware/CatchAsyncErrors"
+import { IOrder } from "../models/orderModel"
+import sendMail from "../utils/sendMail"
+import NotificationModel from "../models/notificationModel"
+import { createNewOrder, getAllOrderServices } from "../services/orderServices"
 
 async function createOrderHandle(
   req: Request,
@@ -63,7 +63,7 @@ async function createOrderHandle(
       title: "New Order",
       message: `you have a new order from ${course?._id}`,
     });
-    course.purchased ? (course.purchased = +1) : course.purchased;
+    course.purchased ? (course.purchased += 1) : course.purchased;
     await course.save();
 
     createNewOrder(data, res, next);
@@ -71,5 +71,14 @@ async function createOrderHandle(
     return next(new ErrorHandler(error.message, 400));
   }
 }
+// Get All Orders --- only for admins
+export const getAllOrders = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    getAllOrderServices(res);
+  } catch (error: any) {
+    return next(new ErrorHandler(error.message, 400))
+  }
+}
+
 
 export default createOrderHandle;

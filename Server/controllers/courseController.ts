@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { CatchAsyncError } from "../middleware/CatchAsyncErrors";
 import ErrorHandler from "../utils/ErrorHandler";
 import cloudinary from "cloudinary";
-import { createCourse } from "../services/course.service";
+import { createCourse, getAllCourseServices } from "../services/course.service";
 import CourseModel from "../models/courseModel";
 import { redis } from "../utils/redis";
 import { isElementAccessExpression } from "typescript";
@@ -170,4 +170,13 @@ export const getCourseByUser = async (
   } catch (error: any) {
     return next(new ErrorHandler(error.message, 500));
   }
-};
+}
+
+// Get All courses --- only for admins
+export const getAllUser = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    getAllCourseServices(res);
+  } catch (error: any) {
+    return next(new ErrorHandler(error.message, 400))
+  }
+}

@@ -24,7 +24,7 @@ async function handleUpdateNotification (req:Request,res:Response,next:NextFunct
      if(!notification){
           return next(new ErrorHandler("Notification not found",404))
      }else{
-        notification.status? (notification.status=="read"):notification.status
+        notification.status? (notification.status ="read"):notification.status
      }
      
     await notification.save();

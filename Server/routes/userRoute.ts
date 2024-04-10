@@ -1,5 +1,5 @@
 import express from "express";
-import { ActivateUser, UpdatePassword, UpdateProfilePicture, getUserInfo, loginUser, logoutUser, socialAuth, updateAccessToken, updateUserInfo, userRegistrationHandler } from "../controllers/userController";
+import { ActivateUser, UpdatePassword, UpdateProfilePicture, getUserInfo, loginUser, logoutUser, socialAuth, updateAccessToken, updateUserInfo, userRegistrationHandler, getAllUsers } from "../controllers/userController";
 import { authorizeRoles, isAuthenticated } from "../middleware/auth";
 import { CatchAsyncError } from "../middleware/CatchAsyncErrors";
 const router = express.Router();
@@ -23,5 +23,7 @@ router.put("/updateUserInfo", isAuthenticated, CatchAsyncError(updateUserInfo));
 router.put("/updatePassword", isAuthenticated, CatchAsyncError(UpdatePassword));
 
 router.put("/updateUserAvatar", isAuthenticated, CatchAsyncError(UpdateProfilePicture));
+
+router.get("/get-Users", isAuthenticated, authorizeRoles("admin"), CatchAsyncError(getAllUsers));
 
 export default router;
