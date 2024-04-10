@@ -24,7 +24,7 @@ async function handleUpdateNotification (req:Request,res:Response,next:NextFunct
      if(!notification){
           return next(new ErrorHandler("Notification not found",404))
      }else{
-        notification.status? (notification.status=="read"):notification.status
+        notification.status? (notification.status ="read"):notification.status
      }
      
     await notification.save();
@@ -48,7 +48,4 @@ cron.schedule("0 0 0 * * *",async()=>{
      console.log("Deleted read notification");
      
 })
-const getAllNotification = CatchAsyncError(handleGetAllNotification);
-const updateNotification = CatchAsyncError(handleUpdateNotification);
-
-export  {getAllNotification,updateNotification};
+export {handleGetAllNotification,handleUpdateNotification};
