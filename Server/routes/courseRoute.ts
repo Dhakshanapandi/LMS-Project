@@ -15,5 +15,6 @@ courseRouter.get("/get-courses/",CatchAsyncError(getAllCourses))
 
 courseRouter.get("/get-courses-content/:id",isAuthenticated,CatchAsyncError(getCourseByUser))
 
+courseRouter.get("/get-courses-admin", isAuthenticated, authorizeRoles("admin"), getAllCourses)
 
 export default courseRouter;

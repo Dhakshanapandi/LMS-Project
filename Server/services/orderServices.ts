@@ -11,4 +11,15 @@ async function newOrder(data: any, next: NextFunction,res:Response) {
 });
 
 }
+
+  // Get All Orders
+  export const getAllOrderServices = async(res:Response ) => {
+    const orders = await OrderModel.find().sort({createdAt:-1});
+  
+    res.status(201).json({
+      success: true,
+      orders,
+    })
+  }
+  
 export const createNewOrder = CatchAsyncError(newOrder);

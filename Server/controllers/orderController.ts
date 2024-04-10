@@ -6,7 +6,7 @@ import { CatchAsyncError } from "../middleware/CatchAsyncErrors"
 import { IOrder } from "../models/orderModel"
 import sendMail from "../utils/sendMail"
 import NotificationModel from "../models/notificationModel"
-import { createNewOrder } from "../services/orderServices"
+import { createNewOrder, getAllOrderServices } from "../services/orderServices"
 
 async function createOrderHandle (req:Request,res:Response,next:NextFunction){
     try{
@@ -67,6 +67,15 @@ async function createOrderHandle (req:Request,res:Response,next:NextFunction){
         return next(new ErrorHandler(error.message, 400));
     }
 }
+   // Get All Orders --- only for admins
+export const getAllOrders = CatchAsyncError(async(req:Request, res:Response, next:NextFunction) => {
+    try {
+      getAllOrderServices(res);
+    } catch (error:any) {
+      return next(new ErrorHandler(error.message, 400))
+    }
+  })
+  
 const createOrder = CatchAsyncError(createOrderHandle)
 
 export default createOrder;

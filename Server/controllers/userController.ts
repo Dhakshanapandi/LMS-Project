@@ -10,7 +10,7 @@ import { create } from "domain";
 require("dotenv").config();
 import { accessTokenOptions, refreshTokenOptions, sendToken } from "../utils/jwt"
 import { redis } from "../utils/redis";
-import getUserById from "../services/user_services";
+import getUserById, { getAllUserServices } from "../services/user_services";
 import cloudinary from "cloudinary";
 
 //create new user
@@ -379,6 +379,15 @@ const UpdateProfilePicture = CatchAsyncError(async(req:Request, res:Response, ne
       user,
     })
     
+  } catch (error:any) {
+    return next(new ErrorHandler(error.message, 400))
+  }
+})
+
+   // Get All User --- only for admins
+export const getAllUsers = CatchAsyncError(async(req:Request, res:Response, next:NextFunction) => {
+  try {
+    getAllUserServices(res);
   } catch (error:any) {
     return next(new ErrorHandler(error.message, 400))
   }
