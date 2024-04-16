@@ -406,10 +406,34 @@ const getAllUsers = async (req: Request, res: Response, next: NextFunction) => {
 // Update User Role  -- only for admins
 const updateUserRole = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const {id, role} = req.body;
-    updateUserRoleService(res,id,role);
-  } catch (error:any) {
+    const { id, role } = req.body;
+    updateUserRoleService(res, id, role);
+  } catch (error: any) {
     return next(new ErrorHandler(error.message, 400))
+  }
+}
+
+// Delete User -- only for admin
+const deleteUser = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const {id} = req.params;
+    const user = await userModel.findById(id);
+
+    if (!user) {
+      return next(new ErrorHandler("User not found", 404));
+    }
+
+    await user.deleteOne({ id });
+
+    await redis.del(id);
+
+    res.status(200).json({
+      success: true,
+      message: "User Deleted Successfully"
+    });
+
+  } catch (error: any) {
+    return next(new ErrorHandler(error.message, 400));
   }
 }
 
@@ -425,5 +449,6 @@ export {
   UpdatePassword,
   UpdateProfilePicture,
   getAllUsers,
-  updateUserRole
+  updateUserRole,
+  deleteUser
 };
