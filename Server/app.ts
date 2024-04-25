@@ -8,6 +8,7 @@ import courseRouter from "./routes/courseRoute";
 import orderRouter from "./routes/orderRoute";
 import notificationRouter from "./routes/notificationRoute"
 import layoutRouter from "./routes/layoutRoute";
+import analyticsRouter from "./routes/analytics_route";
 export const app = express();
 
 //body parser
@@ -17,9 +18,9 @@ app.use(cookieParser())
 //cors -> cors origin resource sharing
 app.use(cors({origin:process.env.ORIGIN}))
 
-app.use("/user",userRouter);
-app.use("/course",courseRouter);
-app.use("/order",orderRouter);
+app.use("/user",userRouter, analyticsRouter);
+app.use("/course",courseRouter, analyticsRouter);
+app.use("/order",orderRouter, analyticsRouter);
 app.use("/notification",notificationRouter)
 app.use("/layout",layoutRouter)
 
