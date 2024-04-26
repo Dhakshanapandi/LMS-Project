@@ -7,3 +7,14 @@ export const createCourse = CatchAsyncError(
     return course
   }
 );
+
+  // Get All Courses
+  export const getAllCourseServices = async(res:Response ) => {
+    const courses = await CourseModel.find().sort({createdAt:-1});
+  
+    res.status(201).json({
+      success: true,
+      courses,
+    })
+  }
+  
