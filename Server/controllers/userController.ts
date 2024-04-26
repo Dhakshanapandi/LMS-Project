@@ -170,6 +170,6 @@ const logoutUser = CatchAsyncError(async(req:Request, res:Response, next:NextFun
   }
 })
 
-
+ 
 const Activation = CatchAsyncError(ActivateUser);
 export { userRegistration, Activation, loginUser, logoutUser};
