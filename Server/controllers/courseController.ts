@@ -2,7 +2,7 @@ import {Request,Response,NextFunction } from "express";
 import { CatchAsyncError } from "../middleware/CatchAsyncErrors";
 import ErrorHandler from "../utils/ErrorHandler";
 import cloudinary from "cloudinary";
-import { createCourse } from "../services/course.service";
+import { createCourse, getAllCourseServices } from "../services/course.service";
 import CourseModel from "../models/courseModel";
 import { redis } from "../utils/redis";
 import ejs from "ejs";
@@ -79,7 +79,11 @@ export const editCourse = CatchAsyncError(
 
 //get single course - without purchasing
 
-export const getSingleCourse = async (req: Request,res: Response,next: NextFunction) => {
+export const getSingleCourse = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const courseId = req.params.id;
 
@@ -96,15 +100,15 @@ export const getSingleCourse = async (req: Request,res: Response,next: NextFunct
     }
 
     const course = await CourseModel.findById(req.params.id).select(
-        "-courseData.videoUrl -courseData.suggestion -courseData.questions -courseData.links");
+      "-courseData.videoUrl -courseData.suggestion -courseData.questions -courseData.links"
+    );
 
-      await redis.set(courseId, JSON.stringify(course));
+    await redis.set(courseId, JSON.stringify(course),'EX',604800); // 7 days
 
-      res.status(200).json({
-        success: true,
-        course,
-      });
-    
+    res.status(200).json({
+      success: true,
+      course,
+    });
   } catch (error: any) {
     return next(new ErrorHandler(error.message, 500));
   }
@@ -112,7 +116,11 @@ export const getSingleCourse = async (req: Request,res: Response,next: NextFunct
 
 //get All courses - without purchasing
 
-export const getAllCourses = async (req: Request,res: Response,next: NextFunction) => {
+export const getAllCourses = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const isCacheExist = await redis.get("allCourses");
 
@@ -123,44 +131,84 @@ export const getAllCourses = async (req: Request,res: Response,next: NextFunctio
         courses,
       });
       return;
-    } 
-      const course = await CourseModel.find().select(
-        "-courseData.videoUrl -courseData.suggestion -courseData.questions -courseData.links");
+    }
+    const course = await CourseModel.find().select(
+      "-courseData.videoUrl -courseData.suggestion -courseData.questions -courseData.links"
+    );
 
-      await redis.set("allCourses", JSON.stringify(course));
-      res.status(200).json({
-        success: true,
-        course,
-      });
-    
+    await redis.set("allCourses", JSON.stringify(course));
+    res.status(200).json({
+      success: true,
+      course,
+    });
   } catch (error: any) {
     return next(new ErrorHandler(error.message, 500));
   }
 };
 
-
 //get course content - only for valid user
 
-export const getCourseByUser = async(req:Request,res:Response,next:NextFunction)=>{
+export const getCourseByUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const userCourseList = req.user?.courses;
     const courseId = req.params.id;
 
-    const courseExists = userCourseList?.find((course:any) => course._id.toString() === courseId);
+    const courseExists = userCourseList?.find(
+      (course: any) => course._id.toString() === courseId
+    );
 
-    if(!courseExists){
-        return next(new ErrorHandler("You are not eligible to access this course",400))
+    if (!courseExists) {
+      return next(
+        new ErrorHandler("You are not eligible to access this course", 400)
+      );
     }
     const course = await CourseModel.findById(courseId);
 
     const content = course?.courseData;
 
     res.status(200).json({
-      success:true,
+      success: true,
       content,
-    })
-  } catch (error:any) {
-      return next(new ErrorHandler(error.message,500))
+    });
+  } catch (error: any) {
+    return next(new ErrorHandler(error.message, 500));
+  }
+}
+
+// Get All courses --- only for admins
+export const getAllUser = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    getAllCourseServices(res);
+  } catch (error: any) {
+    return next(new ErrorHandler(error.message, 400))
+  }
+}
+
+// Delete Course -- only for admin
+export const deleteCourse = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { id } = req.params;
+    const course = await CourseModel.findById(id);
+
+    if (!course) {
+      return next(new ErrorHandler("Course not found", 404));
+    }
+
+    await course.deleteOne({ id });
+
+    await redis.del(id);
+
+    res.status(200).json({
+      success: true,
+      message: "Course Deleted Successfully"
+    });
+
+  } catch (error: any) {
+    return next(new ErrorHandler(error.message, 400));
   }
 }
 
